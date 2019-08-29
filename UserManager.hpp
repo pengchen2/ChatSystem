@@ -70,6 +70,18 @@ class UserManager{
             Unlock();
             return 1;
         }
+        void Erase(const unsigned int &id)
+        {
+            Lock();
+            auto it = online_users.find(id);
+            if(it == online_users.end()){
+                online_users.erase(it++);
+                UnLock();
+                return;
+            }
+            UnLock();
+            return;
+        }
         unsigned int Check(const unsigned int &id, const std::string &passwd)
         {
             Lock();
@@ -83,7 +95,7 @@ class UserManager{
             }
             Unlock();
             return 2;
-        }
+        }:
         void AddOnlineUser(unsigned int id, struct sockaddr_in &peer)
         {
             Lock();
