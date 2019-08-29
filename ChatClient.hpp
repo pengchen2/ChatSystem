@@ -194,9 +194,42 @@ class ChatClient{
                 w.PutUserToOnline(online);
             }
         }
-        void Logout()
+        bool Logout()
         {
-
+             if(ConnectServer()){
+                    Request rq;
+                    rq.method = "LOGOUT\n";
+                    
+                    Json::Value root;
+                    root["id"] = id;
+                    
+                    Util::Seralizer(root,rq.text);
+                    
+                    rq.content_length = "Content-Length: ";
+                    rq.content_length += Util::IntToString((rq.text).size());
+                    rq.content_length += "\n";
+                    
+                    Util::SendRequest(tcp_sock,rq);
+                    unsigned int result = 0;
+                    recv(tcp_sock,&result,sizeof(result),0);
+                    bool res = false;
+                    if(result>0){
+                        res = true;
+                        std::string text_ = "I am logout! Bye...";
+                        unsigned int type_ = LOGOUT_TYPE;
+                        unsigned int id_ = id;
+                        Message m(text_,id_,type_);
+                        std::string sendString;
+                        m.ToSendString(sendString);
+                        UdpSend(sendString);
+                   
+                        std::cout<<"Logout Success!"<<std::endl;
+                    }else{
+                        std::cout<<"Logout Failed!"<<std::endl;
+                    }
+                    close(tcp_sock);
+             }
+             return res;       
         }
         ~ChatClient()
         {
