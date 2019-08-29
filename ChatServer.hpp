@@ -124,7 +124,10 @@ class ChatServer{
                 unsigned int result = sp->LoginUser(id, passwd, ip, port);
                 send(sock, &result, sizeof(result), 0);
             }else{
-                //Logout, TODO
+                    unsigned int id = root["id"].asInt();
+                
+                    unsigned int result = sp->Erase(id);
+                }
             }
             close(sock);
         }
